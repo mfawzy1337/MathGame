@@ -61,7 +61,7 @@ void AdditionMode()
 
         int firstOperand = generateRondomOperand(0, 9);
         int secondOperand = generateRondomOperand(0, 9);
-        string answerStatus="";
+        string answerStatus = "";
         displayDashboard(answerStatus);
         Console.Write($"{firstOperand} + {secondOperand} = ");
         int answer = int.Parse(Console.ReadLine());
@@ -71,7 +71,7 @@ void AdditionMode()
         {
             playerScore++;
             answerStatus = "Correct!";
-           
+
         }
         else
         {
@@ -85,7 +85,7 @@ void AdditionMode()
         Thread.Sleep(1000);
         Console.Clear();
 
-    } while (playerScore<10);
+    } while (playerScore < 10);
     if (playerScore == 10)
     {
         Console.WriteLine("Congrats You've got the Max Score");
@@ -124,10 +124,10 @@ void SimulateDelay(int delayInSec)
         Console.Clear();
     }
 }
-int generateRondomOperand(int minValue,int maxValue)
+int generateRondomOperand(int minValue, int maxValue)
 {
     Random random = new Random();
-    return random.Next(minValue,maxValue);
+    return random.Next(minValue, maxValue);
 }
 void AdditionGame()
 {
