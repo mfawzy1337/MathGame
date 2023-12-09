@@ -1,6 +1,3 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection.PortableExecutable;
-
 Console.WriteLine("****** Welcome To Math Game ******");
 Console.Write("Please Enter your Name >> ");
 string playerName = Console.ReadLine();
