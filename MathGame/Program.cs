@@ -1,4 +1,4 @@
-﻿Console.WriteLine("****** Welcome To Math Game ******");
+Console.WriteLine("****** Welcome To Math Game ******");
 Console.Write("Please Enter your Name >> ");
 string playerName = Console.ReadLine();
 int playerScore = 0;
