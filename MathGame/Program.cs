@@ -63,7 +63,51 @@ void MultiplicationMode()
 
 void SubtractionMode()
 {
-    Console.WriteLine("SubtractionMode");
+    Console.Clear();
+    do
+    {
+        int temp;
+        int firstOperand = generateRondomOperand(0, 9);
+        int secondOperand = generateRondomOperand(0, 9);
+        if (firstOperand < secondOperand)
+        {
+            temp = firstOperand;
+            firstOperand = secondOperand;
+            secondOperand = temp;
+        }
+        string answerStatus = "";
+        displayDashboard(answerStatus, MODE.SUBTRACTION);
+        Console.Write($"{firstOperand} - {secondOperand} = ");
+        int answer = int.Parse(Console.ReadLine());
+        Console.Clear();
+
+        if (firstOperand - secondOperand == answer)
+        {
+            playerScore++;
+            answerStatus = "Correct!";
+
+        }
+        else
+        {
+            if (playerScore > 0)
+            {
+                playerScore--;
+            }
+            answerStatus = "Incorrect!";
+        }
+        displayDashboard(answerStatus, MODE.ADDITION);
+        Thread.Sleep(1000);
+        Console.Clear();
+
+    } while (playerScore < 10);
+    if (playerScore == 10)
+    {
+        Console.WriteLine("Congrats You've got the Max Score");
+    }
+    else
+    {
+        Console.WriteLine("Bye!");
+    }
 }
 
 void AdditionMode()
