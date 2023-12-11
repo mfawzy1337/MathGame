@@ -2,35 +2,49 @@ Console.WriteLine("****** Welcome To Math Game ******");
 Console.Write("Please Enter your Name >> ");
 string playerName = Console.ReadLine();
 int playerScore = 0;
-
+string playAgain;
 Console.Clear();
-
 SimulateDelay(3);
-PrintMenu();
-
-Console.Write("please Select Game Mode >>");
-char selectedMode = Char.Parse(Console.ReadLine().ToLower().Trim());
-switch (selectedMode)
+do
 {
-    case 'a':
-        AdditionMode();
-        break;
-    case 's':
-        SubtractionMode();
-        break;
-    case 'm':
-        MultiplicationMode();
-        break;
-    case 'd':
-        DivisionMode();
-        break;
-    case 'q':
-        QuitTheGame();
-        break;
-    default:
-        Console.WriteLine("Incorrect Choice");
-        break;
-}
+    Console.Clear();
+
+    PrintMenu();
+
+    Console.Write("please Select Game Mode >>");
+    char selectedMode = Char.Parse(Console.ReadLine().ToLower().Trim());
+    Console.Clear();
+
+    SimulateDelay(1);
+
+    switch (selectedMode)
+    {
+        case 'a':
+            AdditionMode();
+            break;
+        case 's':
+            SubtractionMode();
+            break;
+        case 'm':
+            MultiplicationMode();
+            break;
+        case 'd':
+            DivisionMode();
+            break;
+        case 'q':
+            QuitTheGame();
+            break;
+        default:
+            Console.WriteLine("Incorrect Choice");
+            break;
+    }
+    Console.Write("Do you want to play again? (y/n)>>");
+    playAgain = Console.ReadLine().ToLower().Trim();
+
+    playerScore = 0;
+    SimulateDelay(1);
+
+} while (playAgain != "n" || playAgain != "no");
 
 void QuitTheGame()
 {
@@ -55,14 +69,13 @@ void SubtractionMode()
 void AdditionMode()
 {
     Console.Clear();
-    string again = "y";
     do
     {
 
         int firstOperand = generateRondomOperand(0, 9);
         int secondOperand = generateRondomOperand(0, 9);
         string answerStatus = "";
-        displayDashboard(answerStatus);
+        displayDashboard(answerStatus, MODE.ADDITION);
         Console.Write($"{firstOperand} + {secondOperand} = ");
         int answer = int.Parse(Console.ReadLine());
         Console.Clear();
@@ -81,7 +94,7 @@ void AdditionMode()
             }
             answerStatus = "Incorrect!";
         }
-        displayDashboard(answerStatus);
+        displayDashboard(answerStatus, MODE.ADDITION);
         Thread.Sleep(1000);
         Console.Clear();
 
@@ -96,13 +109,33 @@ void AdditionMode()
     }
 }
 
-void displayDashboard(string answerStatus)
+void displayDashboard(string answerStatus, MODE mode)
 {
-    Console.WriteLine("***********************************************");
-    Console.WriteLine("***************  Addition Mode  ***************");
-    Console.WriteLine("***********************************************");
+    string currentMode;
+    switch (mode)
+    {
+        case MODE.ADDITION:
+            currentMode = "Addition";
+            break;
+        case MODE.SUBTRACTION:
+            currentMode = "Subtraction";
+            break;
+        case MODE.MULTIPLICATION:
+            currentMode = "Multiplication";
+            break;
+        case MODE.DIVISION:
+            currentMode = "Division";
+            break;
+        default:
+            currentMode = "Random";
+            break;
+
+    }
+    Console.WriteLine("*************************************************");
+    Console.WriteLine($"****************  {currentMode} Mode  ****************");
+    Console.WriteLine("*************************************************");
     Console.WriteLine($"Name: {playerName}\t Score: {playerScore}/10\tAnswer: {answerStatus}");
-    Console.WriteLine("***********************************************");
+    Console.WriteLine("*************************************************");
 
 }
 
@@ -128,4 +161,12 @@ int generateRondomOperand(int minValue, int maxValue)
 {
     Random random = new Random();
     return random.Next(minValue, maxValue);
+}
+enum MODE
+{
+    ADDITION,
+    SUBTRACTION,
+    MULTIPLICATION,
+    DIVISION,
+    RANDOM
 }
