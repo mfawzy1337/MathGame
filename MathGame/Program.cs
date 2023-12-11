@@ -2,7 +2,7 @@ Console.WriteLine("****** Welcome To Math Game ******");
 Console.Write("Please Enter your Name >> ");
 string playerName = Console.ReadLine();
 int playerScore = 0;
-string playAgain;
+string playAgain="";
 Console.Clear();
 SimulateDelay(3);
 do
@@ -12,31 +12,31 @@ do
     PrintMenu();
 
     Console.Write("please Select Game Mode >>");
-    char selectedMode = Char.Parse(Console.ReadLine().ToLower().Trim());
+    string selectedMode = Console.ReadLine().ToLower().Trim();
     Console.Clear();
 
-    SimulateDelay(1);
 
     switch (selectedMode)
     {
-        case 'a':
+        case "a":
             AdditionMode();
             break;
-        case 's':
+        case "s":
             SubtractionMode();
             break;
-        case 'm':
+        case "m":
             MultiplicationMode();
             break;
-        case 'd':
+        case "d":
             DivisionMode();
             break;
-        case 'q':
+        case "q":
             QuitTheGame();
             break;
         default:
             Console.WriteLine("Incorrect Choice");
-            break;
+            Thread.Sleep(1000);
+            continue;
     }
     Console.Write("Do you want to play again? (y/n)>>");
     playAgain = Console.ReadLine().ToLower().Trim();
@@ -48,7 +48,8 @@ do
 
 void QuitTheGame()
 {
-    Console.WriteLine("QuitTheGame");
+    Console.WriteLine("Quitting the Game...");
+    Environment.Exit(0);
 }
 
 void DivisionMode()
@@ -58,7 +59,45 @@ void DivisionMode()
 
 void MultiplicationMode()
 {
-    Console.WriteLine("MultiplicationMode");
+    Console.Clear();
+    do
+    {
+
+        int firstOperand = generateRondomOperand(0, 9);
+        int secondOperand = generateRondomOperand(0, 9);
+        string answerStatus = "";
+        displayDashboard(answerStatus, MODE.MULTIPLICATION);
+        Console.Write($"{firstOperand} * {secondOperand} = ");
+        int answer = int.Parse(Console.ReadLine());
+        Console.Clear();
+
+        if (firstOperand * secondOperand == answer)
+        {
+            playerScore++;
+            answerStatus = "Correct!";
+
+        }
+        else
+        {
+            if (playerScore > 0)
+            {
+                playerScore--;
+            }
+            answerStatus = "Incorrect!";
+        }
+        displayDashboard(answerStatus, MODE.MULTIPLICATION);
+        Thread.Sleep(1000);
+        Console.Clear();
+
+    } while (playerScore < 10);
+    if (playerScore == 10)
+    {
+        Console.WriteLine("Congrats You've got the Max Score");
+    }
+    else
+    {
+        Console.WriteLine("Bye!");
+    }
 }
 
 void SubtractionMode()
