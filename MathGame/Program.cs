@@ -255,7 +255,7 @@ void displayDashboard(string answerStatus, MODE mode)
     Console.WriteLine("*************************************************");
     Console.WriteLine($"****************  {currentMode} Mode  ****************");
     Console.WriteLine("*************************************************");
-    Console.WriteLine($"Name: {playerName}\t Score: {playerScore}/10\tAnswer: {answerStatus}");
+    Console.WriteLine($"Name: {playerName,-10} Score: {playerScore}/10\tAnswer: {answerStatus,5}");
     Console.WriteLine("*************************************************");
 
 }
