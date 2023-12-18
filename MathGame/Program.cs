@@ -1,8 +1,46 @@
+using MathGameLib;
+using MathGameLib.Enums;
+
 Console.WriteLine("****** Welcome To Math Game ******");
 Console.Write("Please Enter your Name >> ");
-string playerName = Console.ReadLine();
-int playerScore = 0;
-string playAgain="";
+Player player = new Player();
+player.Name = Console.ReadLine();
+
+
+
+player.Score = 0;
+player.HighScore = 0;
+MathGame game = new MathGame();
+Console.Clear();
+
+Console.Write("Please Enter The Question count >> ");
+game.QuestionCount = int.Parse(Console.ReadLine().Trim());
+
+string playAgain = "";
+Console.Clear();
+Console.Write("please Select Game Difficulty (easy,medium,hard,extreme) >>");
+string difficulty = Console.ReadLine().ToLower().Trim();
+if (difficulty == "easy")
+{
+    game.Difficulty = DIFFICULTY.EASY;
+}
+else if (difficulty == "medium")
+{
+    game.Difficulty = DIFFICULTY.MEDIUM;
+}
+else if (difficulty == "hard")
+{
+    game.Difficulty = DIFFICULTY.HARD;
+}
+else if (difficulty == "extreme")
+{
+    game.Difficulty = DIFFICULTY.EXTREME;
+}
+else
+{
+    Console.WriteLine("Incorrect Difficulty...");
+    Thread.Sleep(1000);
+}
 Console.Clear();
 SimulateDelay(3);
 do
@@ -10,7 +48,6 @@ do
     Console.Clear();
 
     PrintMenu();
-
     Console.Write("please Select Game Mode >>");
     string selectedMode = Console.ReadLine().ToLower().Trim();
     Console.Clear();
@@ -19,16 +56,19 @@ do
     switch (selectedMode)
     {
         case "a":
-            AdditionMode();
+            game.Mode = MODE.ADDITION;
             break;
         case "s":
-            SubtractionMode();
+            game.Mode = MODE.SUBTRACTION;
             break;
         case "m":
-            MultiplicationMode();
+            game.Mode = MODE.MULTIPLICATION;
             break;
         case "d":
-            DivisionMode();
+            game.Mode = MODE.DIVISION;
+            break;
+        case "r":
+            game.Mode = MODE.RONDOM;
             break;
         case "q":
             QuitTheGame();
@@ -38,13 +78,123 @@ do
             Thread.Sleep(1000);
             continue;
     }
+    play();
     Console.Write("Do you want to play again? (y/n)>>");
     playAgain = Console.ReadLine().ToLower().Trim();
 
-    playerScore = 0;
-    SimulateDelay(1);
+    if (playAgain == "n" || playAgain == "no")
+    {
+        Console.Clear();
+        DisplayResultHistory();
+    }
 
-} while (playAgain != "n" || playAgain != "no");
+} while (playAgain != "n" && playAgain != "no");
+
+void DisplayResultHistory()
+{
+    Console.WriteLine("***************************************** Result History ***************************************");
+    Console.WriteLine($"{"EXPRESSION",-15}{"ANSWER",-11}{"YOUR-ANSWER",-16}{"ANSWER-STATUS",-18}{"Score",-5}{"DIFFICULTY",15}{"DURATION",15}");
+    Console.WriteLine("************************************************************************************************");
+    int totalScore = 0;
+    float totalDuration = 0;
+    Console.WriteLine("------------------------------------------------------------------------------------------------");
+
+
+    foreach (var entry in game.MathExpressions)
+    {
+        totalDuration += entry.answerDuration;
+        int score = 0;
+
+        if (entry.Operation == '+')
+        {
+
+            string answerStatus = entry.FirstOperand + entry.SecondOperand == entry.Answer ? "Correct" : "Incorrect";
+            int correctAnswer = entry.FirstOperand + entry.SecondOperand;
+
+            if (answerStatus == "Correct")
+            {
+                score = 1;
+                totalScore++;
+            }
+            Console.WriteLine($" {entry.FirstOperand} {entry.Operation} {entry.SecondOperand,-12}{correctAnswer,-12}{entry.Answer,-14}{answerStatus,10}{score,10}{entry.Difficulty,12}{(entry.answerDuration / 1000 + "." + entry.answerDuration % 1000) + "s",19}");
+
+        }
+        else if (entry.Operation == '-')
+        {
+
+            string answerStatus = entry.FirstOperand - entry.SecondOperand == entry.Answer ? "Correct" : "Incorrect";
+            int correctAnswer = entry.FirstOperand - entry.SecondOperand;
+
+            if (answerStatus == "Correct")
+            {
+                score = 1;
+                totalScore++;
+            }
+            Console.WriteLine($" {entry.FirstOperand} {entry.Operation} {entry.SecondOperand,-12}{correctAnswer,-12}{entry.Answer,-14}{answerStatus,10}{score,10}{entry.Difficulty,12}{(entry.answerDuration / 1000 + "." + entry.answerDuration % 1000) + "s",19}");
+
+        }
+        else if (entry.Operation == '*')
+        {
+
+            string answerStatus = entry.FirstOperand * entry.SecondOperand == entry.Answer ? "Correct" : "Incorrect";
+            int correctAnswer = entry.FirstOperand * entry.SecondOperand;
+
+            if (answerStatus == "Correct")
+            {
+                score = 1;
+                totalScore++;
+            }
+            Console.WriteLine($" {entry.FirstOperand} {entry.Operation} {entry.SecondOperand,-12}{correctAnswer,-12}{entry.Answer,-14}{answerStatus,10}{score,10}{entry.Difficulty,12}{(entry.answerDuration / 1000 + "." + entry.answerDuration % 1000) + "s",19}");
+
+        }
+        else if (entry.Operation == '/')
+        {
+
+            string answerStatus = entry.FirstOperand / entry.SecondOperand == entry.Answer ? "Correct" : "Incorrect";
+            int correctAnswer = entry.FirstOperand / entry.SecondOperand;
+
+            if (answerStatus == "Correct")
+            {
+                score = 1;
+                totalScore++;
+            }
+            Console.WriteLine($" {entry.FirstOperand} {entry.Operation} {entry.SecondOperand,-12}{correctAnswer,-12}{entry.Answer,-14}{answerStatus,10}{score,10}{entry.Difficulty,12}{(entry.answerDuration / 1000 + "." + entry.answerDuration % 1000) + "s",19}");
+
+        }
+        Console.WriteLine("------------------------------------------------------------------------------------------------");
+    }
+    Console.WriteLine("************************************************************************************************");
+
+    Console.WriteLine($"Player Name {player.Name,-10}, Total Score: {totalScore,10}, Total Time: {totalDuration/1000} s");
+    Console.ReadLine();
+
+}
+
+void play()
+{
+    for (int i = 0; i < game.QuestionCount; i++)
+    {
+        MathExpression q = game.getQuestion();
+        displayDashboard(q);
+        var watch = new System.Diagnostics.Stopwatch();
+
+        watch.Start();
+
+        Console.Write($"{q.FirstOperand} {q.Operation} {q.SecondOperand} = ");
+        q.Answer = int.Parse(Console.ReadLine().Trim());
+        watch.Stop();
+        q.answerDuration = watch.ElapsedMilliseconds;
+
+
+        Console.Clear();
+        displayDashboard(q);
+        Thread.Sleep(1000);
+        Console.Clear();
+
+
+    }
+    player.Score = 0;
+}
 
 void QuitTheGame()
 {
@@ -52,188 +202,12 @@ void QuitTheGame()
     Environment.Exit(0);
 }
 
-void DivisionMode()
+void displayDashboard(MathExpression expression)
 {
-    Console.Clear();
-    do
-    {
 
-        int firstOperand = generateRondomOperand(1, 9);
-        int secondOperand = generateRondomOperand(1, 9);
-        string answerStatus = "";
-        displayDashboard(answerStatus, MODE.DIVISION);
-        Console.Write($"{firstOperand * secondOperand} / {secondOperand}  = ");
-        int answer = int.Parse(Console.ReadLine());
-        Console.Clear();
-
-        if (firstOperand * secondOperand / secondOperand == answer)
-        {
-            playerScore++;
-            answerStatus = "Correct!";
-
-        }
-        else
-        {
-            if (playerScore > 0)
-            {
-                playerScore--;
-            }
-            answerStatus = "Incorrect!";
-        }
-        displayDashboard(answerStatus, MODE.DIVISION);
-        Thread.Sleep(1000);
-        Console.Clear();
-
-    } while (playerScore < 10);
-    if (playerScore == 10)
-    {
-        Console.WriteLine("Congrats You've got the Max Score");
-    }
-    else
-    {
-        Console.WriteLine("Bye!");
-    }
-}
-
-void MultiplicationMode()
-{
-    Console.Clear();
-    do
-    {
-
-        int firstOperand = generateRondomOperand(0, 9);
-        int secondOperand = generateRondomOperand(0, 9);
-        string answerStatus = "";
-        displayDashboard(answerStatus, MODE.MULTIPLICATION);
-        Console.Write($"{firstOperand} * {secondOperand} = ");
-        int answer = int.Parse(Console.ReadLine());
-        Console.Clear();
-
-        if (firstOperand * secondOperand == answer)
-        {
-            playerScore++;
-            answerStatus = "Correct!";
-
-        }
-        else
-        {
-            if (playerScore > 0)
-            {
-                playerScore--;
-            }
-            answerStatus = "Incorrect!";
-        }
-        displayDashboard(answerStatus, MODE.MULTIPLICATION);
-        Thread.Sleep(1000);
-        Console.Clear();
-
-    } while (playerScore < 10);
-    if (playerScore == 10)
-    {
-        Console.WriteLine("Congrats You've got the Max Score");
-    }
-    else
-    {
-        Console.WriteLine("Bye!");
-    }
-}
-
-void SubtractionMode()
-{
-    Console.Clear();
-    do
-    {
-        int temp;
-        int firstOperand = generateRondomOperand(0, 9);
-        int secondOperand = generateRondomOperand(0, 9);
-        if (firstOperand < secondOperand)
-        {
-            temp = firstOperand;
-            firstOperand = secondOperand;
-            secondOperand = temp;
-        }
-        string answerStatus = "";
-        displayDashboard(answerStatus, MODE.SUBTRACTION);
-        Console.Write($"{firstOperand} - {secondOperand} = ");
-        int answer = int.Parse(Console.ReadLine());
-        Console.Clear();
-
-        if (firstOperand - secondOperand == answer)
-        {
-            playerScore++;
-            answerStatus = "Correct!";
-
-        }
-        else
-        {
-            if (playerScore > 0)
-            {
-                playerScore--;
-            }
-            answerStatus = "Incorrect!";
-        }
-        displayDashboard(answerStatus, MODE.ADDITION);
-        Thread.Sleep(1000);
-        Console.Clear();
-
-    } while (playerScore < 10);
-    if (playerScore == 10)
-    {
-        Console.WriteLine("Congrats You've got the Max Score");
-    }
-    else
-    {
-        Console.WriteLine("Bye!");
-    }
-}
-
-void AdditionMode()
-{
-    Console.Clear();
-    do
-    {
-
-        int firstOperand = generateRondomOperand(0, 9);
-        int secondOperand = generateRondomOperand(0, 9);
-        string answerStatus = "";
-        displayDashboard(answerStatus, MODE.ADDITION);
-        Console.Write($"{firstOperand} + {secondOperand} = ");
-        int answer = int.Parse(Console.ReadLine());
-        Console.Clear();
-
-        if (firstOperand + secondOperand == answer)
-        {
-            playerScore++;
-            answerStatus = "Correct!";
-
-        }
-        else
-        {
-            if (playerScore > 0)
-            {
-                playerScore--;
-            }
-            answerStatus = "Incorrect!";
-        }
-        displayDashboard(answerStatus, MODE.ADDITION);
-        Thread.Sleep(1000);
-        Console.Clear();
-
-    } while (playerScore < 10);
-    if (playerScore == 10)
-    {
-        Console.WriteLine("Congrats You've got the Max Score");
-    }
-    else
-    {
-        Console.WriteLine("Bye!");
-    }
-}
-
-void displayDashboard(string answerStatus, MODE mode)
-{
+    string? answerStatus = "";
     string currentMode;
-    switch (mode)
+    switch (game.Mode)
     {
         case MODE.ADDITION:
             currentMode = "Addition";
@@ -252,10 +226,74 @@ void displayDashboard(string answerStatus, MODE mode)
             break;
 
     }
+    switch (game.Mode)
+    {
+        case MODE.ADDITION:
+            if (expression.Answer != null)
+            {
+                answerStatus = expression.FirstOperand + expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+            }
+            break;
+        case MODE.SUBTRACTION:
+            if (expression.Answer != null)
+            {
+                answerStatus = expression.FirstOperand - expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+            }
+            break;
+        case MODE.MULTIPLICATION:
+            if (expression.Answer != null)
+            {
+                answerStatus = expression.FirstOperand * expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+            }
+            break;
+        case MODE.DIVISION:
+            if (expression.Answer != null)
+            {
+                answerStatus = expression.FirstOperand / expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+            }
+            break;
+        default:
+            if (expression.Operation == '+')
+            {
+                if (expression.Answer != null)
+                {
+                    answerStatus = expression.FirstOperand + expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+                }
+            }
+            else if (expression.Operation == '-')
+            {
+                if (expression.Answer != null)
+                {
+                    answerStatus = expression.FirstOperand - expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+                }
+
+            }
+            else if (expression.Operation == '*')
+            {
+                if (expression.Answer != null)
+                {
+                    answerStatus = expression.FirstOperand * expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+                }
+            }
+            else
+            {
+                if (expression.Answer != null)
+                {
+                    answerStatus = expression.FirstOperand / expression.SecondOperand == expression.Answer ? "Correct" : "Incorrect";
+                }
+
+            }
+            break;
+    }
+    if (answerStatus == "Correct")
+    {
+        player.Score++;
+    }
+
     Console.WriteLine("*************************************************");
     Console.WriteLine($"****************  {currentMode} Mode  ****************");
     Console.WriteLine("*************************************************");
-    Console.WriteLine($"Name: {playerName,-10} Score: {playerScore}/10\tAnswer: {answerStatus,5}");
+    Console.WriteLine($"Name: {player.Name,-10} Score: {player.Score}/{game.QuestionCount}\tAnswer:{answerStatus} ");
     Console.WriteLine("*************************************************");
 
 }
@@ -267,26 +305,16 @@ void PrintMenu()
     Console.WriteLine("S - Subtraction");
     Console.WriteLine("M - Multiplication");
     Console.WriteLine("D - Division");
+    Console.WriteLine("R - Random");
     Console.WriteLine("Q - Quit The Game");
 }
 void SimulateDelay(int delayInSec)
 {
     for (int i = delayInSec; i > 0; i--)
     {
-        Console.Write($"Welcome {playerName} the game starts in {i} Seconds");
+        Console.Write($"Welcome {player.Name} the game starts in {i} Seconds");
         Thread.Sleep(1000);
         Console.Clear();
     }
 }
-int generateRondomOperand(int minValue, int maxValue)
-{
-    Random random = new Random();
-    return random.Next(minValue, maxValue);
-}
-enum MODE
-{
-    ADDITION,
-    SUBTRACTION,
-    MULTIPLICATION,
-    DIVISION
-}
+
